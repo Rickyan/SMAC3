@@ -325,7 +325,7 @@ class RunHistory2EPM4Cost(AbstractRunHistory2EPM):
         return X, y
 
 
-class RunHistory2EPM4Crashed(AbstractRunHistory2EPM):
+class RunHistory2EPM4Constraints(AbstractRunHistory2EPM):
     """TODO"""
     
     def _build_matrix(self, run_dict: typing.Mapping[RunKey, RunValue],
@@ -369,16 +369,16 @@ class RunHistory2EPM4Crashed(AbstractRunHistory2EPM):
             # run_array[row, -1] = instances[row]
     
             if run.status == StatusType.SUCCESS:
-                y[row, 0] = 1
-            else:
-                y[row, 0] = 0
+                y[row, 0] = StatusType.SUCCESS.value
+            elif run.status == StatusType.CONSTRAINT_VIOLATED:
+                y[row, 0] = StatusType.CONSTRAINT_VIOLATED.value
 
 
         return X, y
     
     def __init__(self, *args, **kwargs):
         AbstractRunHistory2EPM.__init__(self, *args, **kwargs)
-        self.success_states = [StatusType.CRASHED, StatusType.SUCCESS]
+        self.success_states = [StatusType.CONSTRAINT_VIOLATED, StatusType.SUCCESS]
         
 
 

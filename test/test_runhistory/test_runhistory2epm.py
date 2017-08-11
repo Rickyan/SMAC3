@@ -20,6 +20,10 @@ from smac.optimizer.objective import average_cost
 from smac.epm.rfr_imputator import RFRImputator
 from smac.epm.rf_with_instances import RandomForestWithInstances
 from smac.utils.util_funcs import get_types
+from smac.configspace import pcs_new
+from smac.facade.smac_facade import SMAC
+from smac.configspace.util import convert_configurations_to_array
+
 
 
 def get_config_space():
@@ -53,19 +57,20 @@ class RunhistoryTest(unittest.TestCase):
         self.scen = Scenario({'run_obj': 'runtime', 'cutoff_time': 20, 'cs': self.cs,
                               'output_dir': ''})
         
+
+        
+        
          
     def test_constraints(self):
         self.scen = Scenario({"cutoff_time": 20, 'cs': self.cs, 'run_obj': 'quality',
                               'output_dir': ''})
 
-        rh2epm = runhistory2epm.RunHistory2EPM4Crashed(num_params=2,
+        rh2epm = runhistory2epm.RunHistory2EPM4Constraints(num_params=2,
                                                        scenario=self.scen)
         
         
-        
-
-        self.rh.add(config=self.config1, cost=1, time=10,
-                    status=StatusType.CRASHED, instance_id=23,
+        self.rh.add(config=self.config1, cost=800000.000000, time=10,
+                    status=StatusType.CONSTRAINT_VIOLATED, instance_id=23,
                     seed=None,
                     additional_info=None)
         
@@ -76,7 +81,7 @@ class RunhistoryTest(unittest.TestCase):
 
         # rh2epm should use cost and not time field later
         self.rh.add(config=self.config3, cost=200, time=20,
-                    status=StatusType.CRASHED, instance_id=1,
+                    status=StatusType.CONSTRAINT_VIOLATED, instance_id=1,
                     seed=45,
                     additional_info={"start_time": 20})
 
@@ -84,7 +89,8 @@ class RunhistoryTest(unittest.TestCase):
         self.assertTrue(
             np.allclose(X, np.array([[0.005, 0.995], [0.995, 0.005], [0.995, 0.995]]), atol=0.001))
         # log_10(20 * 10)
-        self.assertTrue(np.allclose(y, np.array([[0.], [1.], [0]]), atol=0.001))
+        self.assertTrue(np.allclose(y, np.array([[StatusType.CONSTRAINT_VIOLATED.value], [StatusType.SUCCESS.value], 
+                                                 [StatusType.CONSTRAINT_VIOLATED.value]]), atol=0.001))
         
         
 
