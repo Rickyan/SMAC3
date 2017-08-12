@@ -60,6 +60,9 @@ class CMDReader(object):
                               help=SUPPRESS)# list of trajectory dump files, 
                                             # reads runhistory 
                                             # and uses final incumbent as challenger 
+        req_opts.add_argument("--support_constraints", default=False, type=bool,
+                              nargs="*",
+                              help=SUPPRESS) 
 
         args_, misc = parser.parse_known_args()
         self._check_args(args_)
